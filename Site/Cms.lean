@@ -73,6 +73,19 @@ which is why it is here rather than in the scroll. -/
 def relatedTo (page : String) : List String :=
   (cmsAll "is-related-to" [page]).filter (· != page)
 
+/-- Claims the content knowledge base supports that no page makes.
+
+The seam between the two knowledge bases. `claims.s.md` knows about notations
+and `cms.s.md` knows about pages; neither imports the other, so this file
+names what it knows of the other rather than reaching in. The cost is one
+`is available` fact per claim, and the return is that an argument sitting
+unused is a query rather than something noticed on a re-read. -/
+def unusedClaims : List String :=
+  let g := compileCall cmsCtx ⟨"is-unused", false, [.var "C"]⟩
+  let r := solveFor cmsProg [g] ["C"]
+  (r.answers.filterMap fun a =>
+    (a.bindings.find? (·.1 == "C")).map fun b => toString b.2).eraseDups
+
 /-- Concepts the site leans on without explaining anywhere.
 
 Reasoning over absence: `is-undefined` holds precisely when nothing

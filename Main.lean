@@ -32,7 +32,10 @@ def main (args : List String) : IO Unit := do
   -- prose leans on without defining is a note to the author, not an error.
   let undef := undefinedConcepts
   unless undef.isEmpty do
-    IO.println s!"  concepts mentioned but never explained: {String.intercalate ", " undef}"
+    IO.println s!"  mentioned but never explained: {String.intercalate ", " undef}"
+  let unused := unusedClaims
+  unless unused.isEmpty do
+    IO.println s!"  supported but asserted nowhere: {String.intercalate ", " unused}"
 
   for p in pages do
     let ids := relatedTo (pageId p)

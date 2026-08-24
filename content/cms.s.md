@@ -87,3 +87,55 @@ Mentions, recorded where a page leans on a term it does not define.
 ```scroll
 rosetta mentions datalog.
 ```
+
+## The seam to the content knowledge base
+
+A page *asserts* a claim, and a claim is about notations rather than about
+pages. Recording it here rather than in `claims.s.md` keeps the content
+knowledge base free of the site's filing system: the claims outlive any
+particular page that makes them.
+
+```scroll
+#| templates
+    *a page* asserts *a claim*.
+    *a claim* is available.
+    *a claim* is asserted somewhere.
+    *a claim* is unused.
+```
+
+```scroll
+rosetta asserts parity-with-sql.
+rosetta asserts recursion-directness.
+rosetta asserts stores-derived.
+```
+
+A claim available in the content knowledge base that no page bothers to make.
+The argument is there and unused — worth knowing while the case is being built
+up, and invisible to anything without negation.
+
+`is available` is stated rather than derived: the two knowledge bases are
+separate documents and neither imports the other, so this file names what it
+knows of the other rather than reaching into it. That is the seam, and paying
+for it in one fact per claim is what keeps the content vocabulary free of
+pages.
+
+```scroll
+parity-with-sql is available.
+recursion-directness is available.
+stores-derived is available.
+carries-expected-answers is available.
+```
+
+```scroll
+#| name: asserted
+a claim is asserted somewhere if
+    a page asserts the claim.
+```
+
+```scroll
+#| name: unused
+a claim is unused if
+    the claim is available
+    and it is not the case that
+        the claim is asserted somewhere.
+```
