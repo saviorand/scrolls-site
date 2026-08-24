@@ -1,34 +1,48 @@
-/* Tokens.
+/* Scrolls.
 
-   The ochre is the accent everywhere Scrolls has a surface: it reads as ink
-   on paper rather than as a product colour, which suits a tool whose whole
-   claim is that the document stays a document. Neutrals are warmed toward it
-   so nothing on the page is a pure grey.
+   The palette is the one from valentin-wiki-site: warm paper and a deep
+   forest ink, which reads as a printed page rather than as a product surface.
+   That suits a tool whose whole claim is that the document stays a document.
 
-   Three theme states, not two: an explicit choice stamps `data-theme`, and
-   the default "system" setting stamps nothing at all. Every colour is defined
-   on bare `:root` first so the unstamped case is complete on its own. */
+   Three theme states, not two. An explicit choice stamps `data-theme` on the
+   root; the default "system" setting stamps nothing at all, so every colour is
+   defined on bare `:root` first and the unstamped case is complete on its own.
+   A colour whose only definition sits inside a media query renders one theme's
+   text on the other theme's ground. */
+
 :root {
-  --paper:#FBFAF7; --surface:#FFFFFF; --sunk:#F3F0EA;
-  --ink:#1A1714; --muted:#6C665F; --faint:#9A938B;
-  --line:#E3DDD3; --line-strong:#CEC6B9;
-  --accent:#B07A2E; --accent-soft:#F5EAD6; --accent-ink:#6B4712;
-  --radius:7px;
-  --measure:38rem;
+  --ink:      #1f3329;
+  --paper:    #f3efe6;
+  --muted-bg: #e8e3d4;
+  --rule:     #2d5a3f;
+
+  --ink-soft:  color-mix(in srgb, var(--ink) 72%, var(--paper));
+  --ink-faint: color-mix(in srgb, var(--ink) 52%, var(--paper));
+  --hair:      color-mix(in srgb, var(--rule) 22%, var(--paper));
+  --hair-firm: color-mix(in srgb, var(--rule) 38%, var(--paper));
+
+  --serif: Newsreader, Georgia, "Times New Roman", serif;
+  --sans:  Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius: 8px;
+  --measure: 40rem;
+  --page: 46rem;
 }
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper:#131110; --surface:#1B1815; --sunk:#232019;
-    --ink:#EFEAE2; --muted:#A69E93; --faint:#7B7469;
-    --line:#302A24; --line-strong:#463D34;
-    --accent:#D6A257; --accent-soft:#3A2C15; --accent-ink:#EFC98A;
+    --ink:      #e8e3d4;
+    --paper:    #1a1c1b;
+    --muted-bg: #25282a;
+    --rule:     #6b9a7f;
   }
 }
 :root[data-theme="dark"] {
-  --paper:#131110; --surface:#1B1815; --sunk:#232019;
-  --ink:#EFEAE2; --muted:#A69E93; --faint:#7B7469;
-  --line:#302A24; --line-strong:#463D34;
-  --accent:#D6A257; --accent-soft:#3A2C15; --accent-ink:#EFC98A;
+  --ink:      #e8e3d4;
+  --paper:    #1a1c1b;
+  --muted-bg: #25282a;
+  --rule:     #6b9a7f;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -37,207 +51,261 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 16px;
-  line-height: 1.65;
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Header ------------------------------------------------------------- */
+/* Header -------------------------------------------------------------- */
 
-header {
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
-}
+header { border-bottom: 1px solid var(--hair); }
 header nav {
-  max-width: 64rem;
+  max-width: var(--page);
   margin: 0 auto;
-  padding: 0.9rem 1.5rem;
+  padding: 1.1rem 1.5rem;
   display: flex;
   align-items: baseline;
-  gap: 1.5rem;
+  gap: 1.6rem;
 }
 header .brand {
-  font-family: Spectral, Georgia, serif;
-  font-size: 1.15rem;
+  font-family: var(--serif);
+  font-size: 1.3rem;
   font-weight: 600;
   color: var(--ink);
   text-decoration: none;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 header ul {
   list-style: none;
   display: flex;
-  gap: 1.1rem;
+  gap: 1.2rem;
   margin: 0;
   padding: 0;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
-header a { color: var(--muted); text-decoration: none; }
-header a:hover { color: var(--ink); }
-header .here { color: var(--accent-ink); font-weight: 600; }
+header li { margin: 0; }
+header a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+}
+header a:hover { color: var(--ink); border-bottom-color: var(--hair-firm); }
+header .here {
+  color: var(--ink);
+  font-weight: 500;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--rule);
+}
 
-/* Article ------------------------------------------------------------ */
+/* Article -------------------------------------------------------------- */
 
 main {
-  max-width: 64rem;
+  max-width: var(--page);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 3rem 1.5rem 4rem;
+  width: 100%;
 }
 article > * { max-width: var(--measure); }
-/* Wide content is exempt from the measure: a table or a code block that
-   wraps to prose width is unreadable in a different way than one that is
-   too wide. */
-article > pre, article > table, article > .wide { max-width: none; }
+/* Wide content is exempt from the measure: a table or a code block wrapped to
+   prose width is unreadable in a different way than one that is too wide. */
+article > pre,
+article > table,
+article > .related,
+article > .claim { max-width: none; }
 
 h1, h2, h3 {
-  font-family: Spectral, Georgia, "Times New Roman", serif;
+  font-family: var(--serif);
+  font-weight: 500;
   text-wrap: balance;
-  line-height: 1.2;
-  margin: 2.2rem 0 0.6rem;
+  line-height: 1.22;
+  letter-spacing: -0.012em;
+  margin: 2.6rem 0 0.7rem;
 }
-h1 { font-size: 2.1rem; font-weight: 600; letter-spacing: -0.02em; margin-top: 0; }
-h2 { font-size: 1.45rem; font-weight: 600; }
-h3 { font-size: 1.15rem; font-weight: 600; }
+h1 { font-size: 2.4rem; margin-top: 0; letter-spacing: -0.022em; }
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.2rem; }
+/* A heading straight after another needs no gap of its own. */
+h1 + h2, h2 + h3 { margin-top: 1.4rem; }
 
-p { margin: 0 0 1rem; }
+p { margin: 0 0 1.15rem; }
 strong { font-weight: 600; }
+em { font-family: var(--serif); font-style: italic; font-size: 1.04em; }
 
-a { color: var(--accent-ink); text-decoration-color: var(--line-strong); }
-a:hover { text-decoration-color: var(--accent); }
-
-ul, ol { padding-left: 1.3rem; }
-li { margin-bottom: 0.35rem; }
-
-/* Code --------------------------------------------------------------- */
-
-code, pre {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+/* The wiki's link treatment: dashed until hovered, so a page dense with links
+   does not read as a page dense with rules. */
+a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }
-code {
-  font-size: 0.88em;
-  background: var(--sunk);
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  padding: 0.1em 0.35em;
+a:hover { text-decoration-style: solid; }
+a:focus-visible {
+  outline: 2px solid var(--rule);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
+
+ul, ol { padding-left: 1.25rem; margin: 0 0 1.15rem; }
+li { margin-bottom: 0.4rem; }
+
+hr { border: 0; border-top: 1px solid var(--hair); margin: 2.5rem 0; }
+
+blockquote {
+  margin: 0 0 1.3rem;
+  padding: 0;
+  border: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+blockquote p { margin-bottom: 0.5rem; }
+
+/* Code ----------------------------------------------------------------- */
+
+code, pre { font-family: var(--mono); }
+
+:not(pre) > code {
+  font-size: 0.85em;
+  background: var(--muted-bg);
+  border: 1px solid var(--hair);
+  border-radius: 4px;
+  padding: 0.12em 0.38em;
+}
+
 pre {
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--muted-bg);
+  border: 1px solid var(--hair);
   border-radius: var(--radius);
-  padding: 0.9rem 1.1rem;
+  padding: 1rem 1.15rem;
   overflow-x: auto;
-  font-size: 0.84rem;
-  line-height: 1.6;
-  margin: 0 0 1.2rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin: 0 0 1.35rem;
 }
-/* A code block inside a `pre` is already in a monospace box; the inline
+/* A code block inside a `pre` already sits in a monospace box; the inline
    chrome would double it. */
 pre code { background: none; border: 0; padding: 0; font-size: inherit; }
 
-/* Tables ------------------------------------------------------------- */
+/* Tables --------------------------------------------------------------- */
 
 table {
   border-collapse: collapse;
   width: 100%;
   font-size: 0.9rem;
-  margin: 0 0 1.4rem;
+  margin: 0 0 1.5rem;
   display: block;
   overflow-x: auto;
 }
 th, td {
   text-align: left;
-  padding: 0.5rem 0.8rem;
-  border-bottom: 1px solid var(--line);
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--hair);
   vertical-align: top;
 }
 th {
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: var(--faint);
-  background: var(--sunk);
+  color: var(--ink-faint);
   font-weight: 600;
   white-space: nowrap;
+  border-bottom-color: var(--hair-firm);
+}
+tbody tr:last-child td { border-bottom: 0; }
+
+/* Claim cards ----------------------------------------------------------
+
+   A claim the content knowledge base entails. The obligation is discharged
+   while this site compiles, so the note underneath states something about the
+   build rather than a badge the author applied. */
+
+.claim-intro {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  margin-bottom: 1.3rem;
+}
+.claim {
+  border: 1px solid var(--hair);
+  border-left: 2px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--muted-bg);
+  padding: 1rem 1.2rem;
+  margin: 0 0 0.85rem;
+}
+.claim-text {
+  margin: 0 0 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+.claim-src {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.01em;
+}
+.claim-src code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--rule);
+  font-size: 1em;
 }
 
-blockquote {
-  margin: 0 0 1.2rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--accent);
-  color: var(--muted);
-}
+/* Related pages --------------------------------------------------------
 
-/* Footer ------------------------------------------------------------- */
+   Derived from the CMS knowledge base rather than authored, so the list is
+   whatever shares a concept with this page. Set apart from the prose because
+   it is machinery talking, not the author. */
+
+.related {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hair);
+}
+.related h2 {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin: 0 0 0.9rem;
+}
+.related ul { list-style: none; padding: 0; margin: 0; }
+.related li { margin-bottom: 0.6rem; line-height: 1.5; }
+.related .blurb { color: var(--ink-soft); font-size: 0.92rem; }
+
+/* Footer --------------------------------------------------------------- */
 
 footer {
-  border-top: 1px solid var(--line);
-  margin-top: 3rem;
+  border-top: 1px solid var(--hair);
+  margin-top: 4rem;
 }
 footer p {
-  max-width: 64rem;
+  max-width: var(--page);
   margin: 0 auto;
-  padding: 1.4rem 1.5rem;
-  font-size: 0.85rem;
-  color: var(--faint);
+  padding: 1.6rem 1.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-faint);
+}
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.35rem; }
+  main { padding-top: 2rem; }
+  header nav { gap: 1rem; flex-wrap: wrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
-
-/* Related pages.
-
-   Derived from the CMS knowledge base rather than authored, so the list is
-   whatever shares a concept with this page. Set apart from the prose because
-   it is machinery talking, not the author. */
-.related {
-  margin-top: 3rem;
-  padding-top: 1.4rem;
-  border-top: 1px solid var(--line);
-}
-.related h2 {
-  font-size: 0.78rem;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--faint);
-  font-family: "Public Sans", system-ui, sans-serif;
-  font-weight: 600;
-  margin: 0 0 0.7rem;
-}
-.related ul { list-style: none; padding: 0; margin: 0; }
-.related li { margin-bottom: 0.5rem; line-height: 1.5; }
-.related .blurb { color: var(--muted); font-size: 0.9rem; }
-
-/* Claim cards.
-
-   A claim the content knowledge base entails, rendered with a note saying so.
-   The obligation is discharged at compile time, so the note is a statement
-   about the build rather than a badge the author applied. */
-.claim {
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius);
-  background: var(--surface);
-  padding: 0.9rem 1.1rem;
-  margin: 0 0 0.9rem;
-}
-.claim-text {
-  margin: 0 0 0.4rem;
-  font-family: Spectral, Georgia, serif;
-  font-size: 1.02rem;
-  line-height: 1.5;
-}
-.claim-src {
-  margin: 0;
-  font-size: 0.76rem;
-  color: var(--faint);
-  letter-spacing: 0.02em;
-}
-.claim-src code {
-  background: var(--accent-soft);
-  border-color: var(--line-strong);
-  color: var(--accent-ink);
-  font-size: 0.95em;
-}
-.claim-intro { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.1rem; }

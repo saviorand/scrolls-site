@@ -122,6 +122,15 @@ def render (nav : List Page) (p : Page) (css : String)
   "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n" ++
   "<meta charset=\"utf-8\">\n" ++
   "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" ++
+  -- Google Fonts is linked rather than `@import`ed from the stylesheet: an
+  -- `@import` must be the first rule in a sheet and blocks rendering until it
+  -- resolves, where a `<link>` lets the page paint in the fallback stack.
+  "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n" ++
+  "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" ++
+  "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?\
+family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400\
+&family=Inter:wght@400;500;600\
+&family=JetBrains+Mono:wght@400;500&display=swap\">\n" ++
   "<title>" ++ Html.escape p.title ++ "</title>\n" ++
   "<meta name=\"description\" content=\"" ++ Html.escape p.blurb ++ "\">\n" ++
   "<style>\n" ++ css ++ "\n</style>\n" ++
