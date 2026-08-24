@@ -25,15 +25,33 @@ def claimCard (pred : String) (args : List String) (_h : Entailed pred args)
 A claim the knowledge base does not entail is a **build error**, not a failed
 check someone has to remember to run.
 
-The spec is in `doc/site-spec.md`. Phase 1 — this — is prose only: no
-knowledge base yet, so the site ships before the experiment starts.
+`doc/site-spec.md` is the plan; `doc/results.md` is what it found, including
+where it found nothing.
 
 ## Layout
 
 ```
-content/*.md     prose, readable in the repo
-static/site.css  the stylesheet
-Site/Render.lean markdown -> a typed HTML document
-Site/Pages.lean  the pages, via include_str
-Main.lean        writes out/
+content/*.md        prose, readable in the repo
+content/cms.s.md    what the site knows about itself
+content/claims.s.md what the site claims about the world
+static/site.css     the stylesheet
+Site/Render.lean    markdown -> a typed HTML document
+Site/Cms.lean       the CMS knowledge base, and its queries
+Site/Claims.lean    the content knowledge base, and the proof obligation
+Site/Pages.lean     the pages, via include_str
+Main.lean           writes out/
 ```
+
+## What the build reports
+
+```
+$ ./.lake/build/bin/build-site out
+  mentioned but never explained: datalog
+  supported but asserted nowhere: carries-expected-answers
+  /         ->  out/index.html          (related: Three ways to say the same thing)
+  /rosetta  ->  out/rosetta/index.html  (related: Scrolls)
+```
+
+Both absences come from rules with `it is not the case that` in them. Neither
+fails the build: they are notes to an author, and the author decides. A false
+*claim* is different — that stops the build.
