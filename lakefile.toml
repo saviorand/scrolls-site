@@ -1,0 +1,26 @@
+name = "scrolls-site"
+defaultTargets = ["Site", "build-site"]
+
+# The site is a Lean program that imports the knowledge bases it renders, so
+# a claim can carry a proof obligation the compiler discharges. That is the
+# whole reason this is a Lean project rather than a static-site generator.
+[[require]]
+name = "scrolls"
+path = "../krokodil-lean"
+
+[[require]]
+name = "html"
+git = "https://github.com/paulbutcher/lean-html"
+rev = "v0.8.0"
+
+[[require]]
+name = "markdown"
+git = "https://github.com/paulbutcher/lean-markdown"
+rev = "v0.5.0"
+
+[[lean_lib]]
+name = "Site"
+
+[[lean_exe]]
+name = "build-site"
+root = "Main"

@@ -1,0 +1,187 @@
+/* Tokens.
+
+   The ochre is the accent everywhere Scrolls has a surface: it reads as ink
+   on paper rather than as a product colour, which suits a tool whose whole
+   claim is that the document stays a document. Neutrals are warmed toward it
+   so nothing on the page is a pure grey.
+
+   Three theme states, not two: an explicit choice stamps `data-theme`, and
+   the default "system" setting stamps nothing at all. Every colour is defined
+   on bare `:root` first so the unstamped case is complete on its own. */
+:root {
+  --paper:#FBFAF7; --surface:#FFFFFF; --sunk:#F3F0EA;
+  --ink:#1A1714; --muted:#6C665F; --faint:#9A938B;
+  --line:#E3DDD3; --line-strong:#CEC6B9;
+  --accent:#B07A2E; --accent-soft:#F5EAD6; --accent-ink:#6B4712;
+  --radius:7px;
+  --measure:38rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#131110; --surface:#1B1815; --sunk:#232019;
+    --ink:#EFEAE2; --muted:#A69E93; --faint:#7B7469;
+    --line:#302A24; --line-strong:#463D34;
+    --accent:#D6A257; --accent-soft:#3A2C15; --accent-ink:#EFC98A;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#131110; --surface:#1B1815; --sunk:#232019;
+  --ink:#EFEAE2; --muted:#A69E93; --faint:#7B7469;
+  --line:#302A24; --line-strong:#463D34;
+  --accent:#D6A257; --accent-soft:#3A2C15; --accent-ink:#EFC98A;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header ------------------------------------------------------------- */
+
+header {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+header nav {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+header .brand {
+  font-family: Spectral, Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+header ul {
+  list-style: none;
+  display: flex;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+header a { color: var(--muted); text-decoration: none; }
+header a:hover { color: var(--ink); }
+header .here { color: var(--accent-ink); font-weight: 600; }
+
+/* Article ------------------------------------------------------------ */
+
+main {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+article > * { max-width: var(--measure); }
+/* Wide content is exempt from the measure: a table or a code block that
+   wraps to prose width is unreadable in a different way than one that is
+   too wide. */
+article > pre, article > table, article > .wide { max-width: none; }
+
+h1, h2, h3 {
+  font-family: Spectral, Georgia, "Times New Roman", serif;
+  text-wrap: balance;
+  line-height: 1.2;
+  margin: 2.2rem 0 0.6rem;
+}
+h1 { font-size: 2.1rem; font-weight: 600; letter-spacing: -0.02em; margin-top: 0; }
+h2 { font-size: 1.45rem; font-weight: 600; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+
+p { margin: 0 0 1rem; }
+strong { font-weight: 600; }
+
+a { color: var(--accent-ink); text-decoration-color: var(--line-strong); }
+a:hover { text-decoration-color: var(--accent); }
+
+ul, ol { padding-left: 1.3rem; }
+li { margin-bottom: 0.35rem; }
+
+/* Code --------------------------------------------------------------- */
+
+code, pre {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+code {
+  font-size: 0.88em;
+  background: var(--sunk);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+pre {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+  overflow-x: auto;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  margin: 0 0 1.2rem;
+}
+/* A code block inside a `pre` is already in a monospace box; the inline
+   chrome would double it. */
+pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+
+/* Tables ------------------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+  margin: 0 0 1.4rem;
+  display: block;
+  overflow-x: auto;
+}
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  background: var(--sunk);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+blockquote {
+  margin: 0 0 1.2rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--accent);
+  color: var(--muted);
+}
+
+/* Footer ------------------------------------------------------------- */
+
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 3rem;
+}
+footer p {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1.4rem 1.5rem;
+  font-size: 0.85rem;
+  color: var(--faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
