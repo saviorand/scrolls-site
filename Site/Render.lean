@@ -43,6 +43,16 @@ structure Page where
       where a claim card lands once the content knowledge base exists. -/
   extra : List (Node .flow) := []
 
+/-- The href to link this page by.
+
+A page at `/rosetta` is written to `rosetta/index.html`, and a link to
+`/rosetta` without the trailing slash only resolves because the server
+redirects. Emitting the slash directly means the link is correct against a
+plain file server, a CDN, and `file://` alike, none of which agree about
+whether to redirect. -/
+def Page.href (p : Page) : String :=
+  if p.path == "/" then "/" else p.path ++ "/"
+
 /-- Markdown to flow content.
 
 `unsafeRaw` is the seam described in the module note: GFM renders to a string
@@ -63,7 +73,7 @@ def header (nav : List Page) (current : String) : Node .flow :=
           if p.path == current then
             span [Node.text p.title] { class_ := some "here" }
           else
-            a { href := p.path } [Node.text p.title]
+            a { href := p.href } [Node.text p.title]
         ])
     ]
   ]
