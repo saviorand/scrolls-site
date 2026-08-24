@@ -10,6 +10,26 @@ lake build
 
 Writes a static directory. No server, no configuration.
 
+Served from a subpath — a GitHub project page, say — set the base:
+
+```sh
+SITE_BASE=/scrolls-site ./.lake/build/bin/build-site out
+```
+
+## Deploying
+
+`.github/workflows/deploy.yml` publishes to GitHub Pages on a push to `main`.
+It checks out `krokodil-lean` and `le-lean` as siblings, because the lakefile
+requires them by relative path, and caches elan and every `.lake` directory.
+
+The workflow compiles Lean rather than running a markdown pass, which is the
+whole point: the knowledge bases are compile-time values, so a claim that
+stopped following fails the build before anything is published. Budget minutes
+for a cold cache.
+
+For a project page, set the repository variable `SITE_BASE` to `/<repo>`. A
+user page or a custom domain needs nothing.
+
 ## Why Lean
 
 A scroll is a knowledge base *and* an ordinary Lean value. Every other content

@@ -43,6 +43,15 @@ structure Page where
       where a claim card lands once the content knowledge base exists. -/
   extra : List (Node .flow) := []
 
+/-- Where the site is served from, without a trailing slash.
+
+Empty for a domain root, which is the usual case. A GitHub project page is
+served from `/<repo>`, and every absolute link on the site has to carry that
+prefix or resolve above the site. Threaded through `href` rather than fixed at
+the top so the same tree can be published either way. -/
+structure Base where
+  root : String := ""
+
 /-- The href to link this page by.
 
 A page at `/rosetta` is written to `rosetta/index.html`, and a link to
@@ -50,8 +59,9 @@ A page at `/rosetta` is written to `rosetta/index.html`, and a link to
 redirects. Emitting the slash directly means the link is correct against a
 plain file server, a CDN, and `file://` alike, none of which agree about
 whether to redirect. -/
-def Page.href (p : Page) : String :=
-  if p.path == "/" then "/" else p.path ++ "/"
+def Page.href (b : Base) (p : Page) : String :=
+  if p.path == "/" then (if b.root.isEmpty then "/" else b.root ++ "/")
+  else b.root ++ p.path ++ "/"
 
 /-- Markdown to flow content.
 
@@ -64,16 +74,17 @@ def markdown (src : String) : Node .flow :=
 
 `current` suppresses the link to the page being rendered — a link to here is
 noise, and marking it is what tells a reader where they are. -/
-def header (nav : List Page) (current : String) : Node .flow :=
+def header (b : Base) (nav : List Page) (current : String) : Node .flow :=
   Html.header [
     Html.nav [
-      a { href := "/", class_ := some "brand" } [Node.text "Scrolls"],
+      a { href := if b.root.isEmpty then "/" else b.root ++ "/"
+        , class_ := some "brand" } [Node.text "Scrolls"],
       ul (nav.map fun p =>
         li [
           if p.path == current then
             span [Node.text p.title] { class_ := some "here" }
           else
-            a { href := p.href } [Node.text p.title]
+            a { href := p.href b } [Node.text p.title]
         ])
     ]
   ]
@@ -92,14 +103,14 @@ def footer : Node .flow :=
 
 Empty renders nothing rather than an empty heading: a page that shares no
 concept with any other should say so by absence. -/
-def relatedBlock : List Page → List (Node .flow)
+def relatedBlock (b : Base) : List Page → List (Node .flow)
   | [] => []
   | ps => [
       section_ [
         h2 [Node.text "Related"],
         ul (ps.map fun p =>
           li [
-            a { href := p.href } [Node.text p.title],
+            a { href := p.href b } [Node.text p.title],
             Node.text " — ",
             span [Node.text p.blurb] { class_ := some "blurb" }
           ])
@@ -107,13 +118,13 @@ def relatedBlock : List Page → List (Node .flow)
     ]
 
 /-- A page as a complete HTML document. -/
-def render (nav : List Page) (p : Page) (css : String)
+def render (b : Base) (nav : List Page) (p : Page) (css : String)
     (related : List Page := []) : String :=
   let doc : Node .flow :=
     div [
-      header nav p.path,
+      header b nav p.path,
       main [
-        article ([markdown p.body] ++ p.extra ++ relatedBlock related)
+        article ([markdown p.body] ++ p.extra ++ relatedBlock b related)
       ],
       footer
     ]

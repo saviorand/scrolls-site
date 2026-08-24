@@ -27,6 +27,10 @@ def pageId (p : Page) : String :=
 
 def main (args : List String) : IO Unit := do
   let root : System.FilePath := args.head?.getD "out"
+  -- A GitHub project page is served from `/<repo>`, so every absolute link
+  -- needs that prefix. `SITE_BASE=/scrolls-site lake exe build-site` publishes
+  -- for one; unset is a domain root, which is the usual case.
+  let base : Base := { root := (← IO.getEnv "SITE_BASE").getD "" }
 
   -- Reported rather than enforced: the site still builds, and a term the
   -- prose leans on without defining is a note to the author, not an error.
@@ -43,7 +47,7 @@ def main (args : List String) : IO Unit := do
     let target := outPath root p
     if let some dir := target.parent then
       IO.FS.createDirAll dir
-    IO.FS.writeFile target (render nav p css related)
+    IO.FS.writeFile target (render base nav p css related)
     let note := if related.isEmpty then "" else
       s!"  (related: {String.intercalate ", " (related.map (·.title))})"
     IO.println s!"  {p.path}  ->  {target}{note}"

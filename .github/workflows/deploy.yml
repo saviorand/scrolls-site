@@ -1,0 +1,111 @@
+# Build the site and publish it to GitHub Pages.
+#
+# The build compiles Lean, because the site's knowledge bases are compile-time
+# values and a claim the content knowledge base does not entail is a build
+# error. That is the point of the project, and it means CI is a real compile
+# rather than a markdown pass: budget minutes, not seconds.
+#
+# Everything under ~/.elan and .lake is cached, so only the first run on a new
+# toolchain pays full price.
+
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a queued run replaces a waiting one rather than
+# stacking behind it. `cancel-in-progress: false` so a running deploy is not
+# killed halfway.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # scrolls-site requires ../krokodil-lean as a path dependency, and that
+      # in turn requires ../le-lean. Both are checked out as siblings so the
+      # relative paths in lakefile.toml resolve.
+      - uses: actions/checkout@v4
+        with:
+          repository: saviorand/krokodil-lean
+          ref: main
+          path: krokodil-lean
+
+      - uses: actions/checkout@v4
+        with:
+          repository: saviorand/le-lean
+          ref: main
+          path: le-lean
+
+      # The site is checked out at the root by the first step; move it beside
+      # its dependencies so `../krokodil-lean` means what the lakefile says.
+      - name: Arrange the working tree
+        run: |
+          mkdir -p build/scrolls-site
+          rsync -a --exclude krokodil-lean --exclude le-lean --exclude build ./ build/scrolls-site/
+          mv krokodil-lean le-lean build/
+
+      - name: Cache elan
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ hashFiles('lean-toolchain') }}
+
+      - name: Cache Lake build
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/scrolls-site/.lake
+            build/krokodil-lean/.lake
+            build/le-lean/.lake
+          key: lake-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}-${{ github.sha }}
+          restore-keys: |
+            lake-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}-
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz \
+            | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Build
+        working-directory: build/scrolls-site
+        run: lake build
+
+      # Fails the job if a claim stopped following, which is what `lake build`
+      # already enforces. Running the generator separately keeps the failure
+      # legible: a compile error is a false claim, a generator error is not.
+      # SITE_BASE is the path the site is served from. A project page lives at
+      # /<repo>, so set it to `/scrolls-site` there; leave it unset for a user
+      # page or a custom domain, which are served from the root.
+      - name: Generate
+        working-directory: build/scrolls-site
+        env:
+          SITE_BASE: ${{ vars.SITE_BASE }}
+        run: ./.lake/build/bin/build-site out
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/scrolls-site/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
