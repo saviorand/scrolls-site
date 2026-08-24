@@ -1,4 +1,5 @@
 import Site.Render
+import Site.Claims
 
 /-!
 # The site's pages
@@ -25,6 +26,8 @@ def rosetta : Page where
   title := "Three ways to say the same thing"
   blurb := "The same knowledge base as SQL, as Cypher, and as Logical English."
   body := include_str "../content/rosetta.md"
+  -- Each of these carries a proof that `content/claims.s.md` entails it.
+  extra := rosettaClaims
 
 def pages : List Page := [index, rosetta]
 

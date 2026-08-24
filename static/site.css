@@ -208,3 +208,36 @@ footer p {
 .related ul { list-style: none; padding: 0; margin: 0; }
 .related li { margin-bottom: 0.5rem; line-height: 1.5; }
 .related .blurb { color: var(--muted); font-size: 0.9rem; }
+
+/* Claim cards.
+
+   A claim the content knowledge base entails, rendered with a note saying so.
+   The obligation is discharged at compile time, so the note is a statement
+   about the build rather than a badge the author applied. */
+.claim {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 0.9rem 1.1rem;
+  margin: 0 0 0.9rem;
+}
+.claim-text {
+  margin: 0 0 0.4rem;
+  font-family: Spectral, Georgia, serif;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+.claim-src {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--faint);
+  letter-spacing: 0.02em;
+}
+.claim-src code {
+  background: var(--accent-soft);
+  border-color: var(--line-strong);
+  color: var(--accent-ink);
+  font-size: 0.95em;
+}
+.claim-intro { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.1rem; }
