@@ -88,13 +88,32 @@ def footer : Node .flow :=
     ]
   ]
 
+/-- Pages related to this one, when the knowledge base found any.
+
+Empty renders nothing rather than an empty heading: a page that shares no
+concept with any other should say so by absence. -/
+def relatedBlock : List Page → List (Node .flow)
+  | [] => []
+  | ps => [
+      section_ [
+        h2 [Node.text "Related"],
+        ul (ps.map fun p =>
+          li [
+            a { href := p.href } [Node.text p.title],
+            Node.text " — ",
+            span [Node.text p.blurb] { class_ := some "blurb" }
+          ])
+      ] { class_ := some "related" }
+    ]
+
 /-- A page as a complete HTML document. -/
-def render (nav : List Page) (p : Page) (css : String) : String :=
+def render (nav : List Page) (p : Page) (css : String)
+    (related : List Page := []) : String :=
   let doc : Node .flow :=
     div [
       header nav p.path,
       main [
-        article ([markdown p.body] ++ p.extra)
+        article ([markdown p.body] ++ p.extra ++ relatedBlock related)
       ],
       footer
     ]

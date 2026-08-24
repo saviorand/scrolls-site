@@ -185,3 +185,26 @@ footer p {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* Related pages.
+
+   Derived from the CMS knowledge base rather than authored, so the list is
+   whatever shares a concept with this page. Set apart from the prose because
+   it is machinery talking, not the author. */
+.related {
+  margin-top: 3rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+.related h2 {
+  font-size: 0.78rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-family: "Public Sans", system-ui, sans-serif;
+  font-weight: 600;
+  margin: 0 0 0.7rem;
+}
+.related ul { list-style: none; padding: 0; margin: 0; }
+.related li { margin-bottom: 0.5rem; line-height: 1.5; }
+.related .blurb { color: var(--muted); font-size: 0.9rem; }
