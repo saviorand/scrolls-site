@@ -1,3 +1,7 @@
 /.lake
 /out
 .DS_Store
+
+# Never commit: this repository is public.
+.env
+.env.*
