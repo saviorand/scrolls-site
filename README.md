@@ -27,8 +27,17 @@ whole point: the knowledge bases are compile-time values, so a claim that
 stopped following fails the build before anything is published. Budget minutes
 for a cold cache.
 
-For a project page, set the repository variable `SITE_BASE` to `/<repo>`. A
-user page or a custom domain needs nothing.
+The site is served at **scrolls.wiki**, from a domain root, so `SITE_BASE` is
+unset. `static/CNAME` carries the domain and the generator copies it into the
+published directory, which is where Pages looks for it.
+
+Two things the workflow needs that are not in this repository:
+
+* **`DEPS_TOKEN`** — a fine-grained token with *Contents: read* on
+  `saviorand/krokodil-lean` and `saviorand/le-lean`. Both are private, and the
+  default `GITHUB_TOKEN` is scoped to this repository alone.
+* **DNS** — four `A` records for `scrolls.wiki` pointing at
+  `185.199.108.153`, `.109.153`, `.110.153` and `.111.153`.
 
 ## Why Lean
 

@@ -51,4 +51,7 @@ def main (args : List String) : IO Unit := do
     let note := if related.isEmpty then "" else
       s!"  (related: {String.intercalate ", " (related.map (·.title))})"
     IO.println s!"  {p.path}  ->  {target}{note}"
+  -- GitHub Pages reads the custom domain from a CNAME file at the root of
+  -- what is published, so it travels with the output rather than the source.
+  IO.FS.writeFile (root / "CNAME") (include_str "static/CNAME")
   IO.println s!"{pages.length} page(s)"

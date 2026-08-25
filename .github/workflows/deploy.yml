@@ -36,17 +36,22 @@ jobs:
       # scrolls-site requires ../krokodil-lean as a path dependency, and that
       # in turn requires ../le-lean. Both are checked out as siblings so the
       # relative paths in lakefile.toml resolve.
+      # Both dependencies are private, so the default GITHUB_TOKEN - which is
+      # scoped to this repository - cannot read them. DEPS_TOKEN is a PAT with
+      # read access to krokodil-lean and le-lean.
       - uses: actions/checkout@v4
         with:
           repository: saviorand/krokodil-lean
           ref: main
           path: krokodil-lean
+          token: ${{ secrets.DEPS_TOKEN }}
 
       - uses: actions/checkout@v4
         with:
           repository: saviorand/le-lean
-          ref: main
+          ref: master
           path: le-lean
+          token: ${{ secrets.DEPS_TOKEN }}
 
       # The site is checked out at the root by the first step; move it beside
       # its dependencies so `../krokodil-lean` means what the lakefile says.
