@@ -78,6 +78,13 @@ jobs:
           restore-keys: |
             lake-${{ hashFiles('lean-toolchain', 'lakefile.toml') }}-
 
+      # Lake clones scasp-lean over https on its own, and the checkout action's
+      # credentials do not reach it. scasp-lean is private, so without this the
+      # clone prompts for a username and fails.
+      - name: Let git authenticate to private dependencies
+        run: |
+          git config --global url."https://x-access-token:${{ secrets.DEPS_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
       - name: Install elan
         run: |
           curl -sSfL https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz \
@@ -85,8 +92,12 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
+      # `lake` will adopt a dependency's toolchain if left to itself, which
+      # pulls 4.34.0-rc2. Everything here was built and tested against 4.33.
       - name: Build
         working-directory: build/scrolls-site
+        env:
+          ELAN_TOOLCHAIN: leanprover/lean4:v4.33.0
         run: lake build
 
       # Fails the job if a claim stopped following, which is what `lake build`
